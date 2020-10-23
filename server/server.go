@@ -15,7 +15,8 @@ import (
 // Server is an API server.
 type Server struct {
 	Router *mux.Router
-	DB     tweets.DB
+	TC TweetsController
+	EC EmojisController
 }
 
 // ServeHTTP delegates to the mux router.
@@ -47,7 +48,7 @@ func (s *Server) handleStoreTweets() http.HandlerFunc {
 			http.Error(w, "decode JSON payload", http.StatusBadRequest)
 			return
 		}
-		if err := s.DB.Store(data.Id, data.Username, data.TweetContent, data.Metadata); err != nil {
+		if err := s.TC.Store(data.Id, data.Username, data.TweetContent, data.Metadata); err != nil {
 			log.Printf("ERROR: server: store tweet %+v: %v\n", data, err)
 			http.Error(w, fmt.Sprintf("store tweet for username %s and id %s", data.Username, data.Id), http.StatusInternalServerError)
 			return
@@ -59,7 +60,7 @@ func (s *Server) handleStoreTweets() http.HandlerFunc {
 
 func (s *Server) handleGetEmojiResults() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		results, err := s.DB.EmojiResults()
+		results, err := s.EC.EmojiResults()
 		if err != nil {
 			log.Printf("ERROR: server: get all emoji results: %v\n", err)
 			http.Error(w, "get emoji results", http.StatusInternalServerError)

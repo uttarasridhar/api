@@ -42,15 +42,24 @@ func Run() error {
 		return fmt.Errorf("api: connect to postgres db: %v", err)
 	}
 	defer close()
-	if err := tweets.CreateTableIfNotExist(conn); err != nil {
+	if err := tweets.CreateTweetsTableIfNotExist(conn); err != nil {
 		return fmt.Errorf("api: create table: %v", err)
 	}
+	if err := tweets.CreateEmojisTableIfNotExist(conn); err != nil {
+		return fmt.Errorf("api: create table: %v", err)
+	}
+
+	db := tweets.NewSQLDB(conn)
+
+	tweets := tweets.NewTweetsController(db)
+	emojis := tweets.NewEmojisController(db)
 
 	s := http.Server{
 		Addr: *addr,
 		Handler: &server.Server{
 			Router: mux.NewRouter(),
-			DB:     tweets.NewSQLDB(conn),
+			Tweets: tweets,
+			Emojis: emojis,
 		},
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
