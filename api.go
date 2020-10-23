@@ -10,9 +10,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/copilot-example-voting-app/api/postgres"
-	"github.com/copilot-example-voting-app/api/server"
-	"github.com/copilot-example-voting-app/api/vote"
+	"github.com/uttarasridhar/api/postgres"
+	"github.com/uttarasridhar/api/server"
+	"github.com/uttarasridhar/api/tweets"
 
 	"github.com/gorilla/mux"
 )
@@ -42,7 +42,7 @@ func Run() error {
 		return fmt.Errorf("api: connect to postgres db: %v", err)
 	}
 	defer close()
-	if err := vote.CreateTableIfNotExist(conn); err != nil {
+	if err := tweets.CreateTableIfNotExist(conn); err != nil {
 		return fmt.Errorf("api: create table: %v", err)
 	}
 
@@ -50,7 +50,7 @@ func Run() error {
 		Addr: *addr,
 		Handler: &server.Server{
 			Router: mux.NewRouter(),
-			DB:     vote.NewSQLDB(conn),
+			DB:     tweets.NewSQLDB(conn),
 		},
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,

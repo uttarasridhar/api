@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/copilot-example-voting-app/api"
+	"github.com/uttarasridhar/api"
 )
 
 func main() {

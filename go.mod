@@ -1,4 +1,4 @@
-module github.com/copilot-example-voting-app/api
+module github.com/uttarasridhar/api
 
 go 1.15
 

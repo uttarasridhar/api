@@ -1,3 +1,6 @@
+# TODO: Update documentation
+
+
 # API microservice
 A REST API microservice orchestrated by Amazon ECS on AWS Fargate that writes and reads voting data from an Amazon Aurora PostgreSQL database.
 
@@ -33,7 +36,7 @@ copilot
     │   └── db.template.yaml
     └── manifest.yml
 ```
-The `manifest.yml` file under `api/` holds the common configuration for a "backend service" pattern. 
+The `manifest.yml` file under `api/` holds the common configuration for a "backend service" pattern.
 For example, in this manifest we demo how you can set up autoscaling for your service as well as container healthchecks.
 
 The Aurora database is defined under the `api/addons/` directory which can hold any arbitrary CloudFormation template.  
@@ -42,7 +45,7 @@ The "addons" features allows you to integrate with any AWS services that are not
 You can find out in more details how Copilot works from our [documentation](https://aws.github.io/copilot-cli/).
 
 ## Deleting the service
-If you'd like to delete only the service from the "voting-app" application. 
+If you'd like to delete only the service from the "voting-app" application.
 ```bash
 $ copilot svc delete
 ```
