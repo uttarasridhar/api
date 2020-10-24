@@ -1,10 +1,9 @@
-
 // Package tweets provides functionality around reading and writing tweets.
 package tweets
 
 import (
 	"database/sql"
-  "fmt"
+	"fmt"
 )
 
 const (
@@ -14,8 +13,8 @@ const (
 
 // DB is the interface for all the operations allowed on tweets.
 type DB interface {
-	StoreTweets(id, username, tweet_content, metadata string) error
-  StoreEmojis(id, emoji string) error
+	StoreTweets(id, username, tweetContent, metadata string) error
+	StoreEmojis(id, emoji string) error
 	EmojiResults() ([]EmojiCount, error)
 }
 
@@ -37,10 +36,10 @@ type sqlDB struct {
 }
 
 // Store a tweet in the database.
-func (db *sqlDB) StoreTweets(id, username, tweet_content, metadata string) error {
-	_, err := db.conn.Exec(`INSERT INTO tweets (id, username, tweet_content, metadata) VALUES ($1, $2, $3, $4)`, id, username, tweet_content, metadata)
+func (db *sqlDB) StoreTweets(id, username, tweetContent, metadata string) error {
+	_, err := db.conn.Exec(`INSERT INTO tweets (id, username, tweetContent, metadata) VALUES ($1, $2, $3, $4)`, id, username, tweetContent, metadata)
 	if err != nil {
-		return fmt.Errorf("tweets: store tweet %s for tweet id %s and username %s: %v", tweet_content, id, username)
+		return fmt.Errorf("tweets: store tweet %s for tweet id %s and username %s: %v", tweetContent, id, username, err)
 	}
 	return nil
 }
@@ -48,7 +47,7 @@ func (db *sqlDB) StoreTweets(id, username, tweet_content, metadata string) error
 func (db *sqlDB) StoreEmojis(id, emoji string) error {
 	_, err := db.conn.Exec(`INSERT INTO emojis (id, emoji) VALUES ($1, $2)`, id, emoji)
 	if err != nil {
-		return fmt.Errorf("emojis: store emoji for tweet id %s and emoji %s: %v", id, emoji)
+		return fmt.Errorf("emojis: store emoji for tweet id %s and emoji %s: %v", id, emoji, err)
 	}
 	return nil
 }
@@ -56,7 +55,7 @@ func (db *sqlDB) StoreEmojis(id, emoji string) error {
 // EmojiCount is a pair of a emoji and the count of occurrences of emoji.
 type EmojiCount struct {
 	Emoji string `json:"emoji"`
-	Count  int    `json:"count"`
+	Count int    `json:"count"`
 }
 
 // EmojiResults returns the pair of emojis and counts.
@@ -80,7 +79,7 @@ func (db *sqlDB) EmojiResults() ([]EmojiCount, error) {
 
 // CreateTweetsTableIfNotExist creates the "tweets" table if it does not exist already.
 func CreateTweetsTableIfNotExist(db *sql.DB) error {
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS tweets (id VARCHAR(255) NOT NULL UNIQUE, username VARCHAR(255) NOT NULL, tweet_content VARCHAR(255) NOT NULL, metadata VARCHAR(255))`)
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS tweets (id VARCHAR(255) NOT NULL UNIQUE, username VARCHAR(255) NOT NULL, tweetContent VARCHAR(255) NOT NULL, metadata VARCHAR(255))`)
 	if err != nil {
 		return fmt.Errorf(`tweet: create "tweets" table: %v\n`, err)
 	}

@@ -15,8 +15,8 @@ import (
 // Server is an API server.
 type Server struct {
 	Router *mux.Router
-	TC TweetsController
-	EC EmojisController
+	TC     tweets.TweetsController
+	EC     tweets.EmojisController
 }
 
 // ServeHTTP delegates to the mux router.
@@ -37,10 +37,10 @@ func (s *Server) handleHealthCheck() http.HandlerFunc {
 func (s *Server) handleStoreTweets() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		data := struct {
-			Id string `json:"id"`
-			Username string `json:"username"`
+			Id           string `json:"id"`
+			Username     string `json:"username"`
 			TweetContent string `json:"tweet_content"`
-			Metadata    string `json:"metadata"`
+			Metadata     string `json:"metadata"`
 		}{}
 		dec := json.NewDecoder(r.Body)
 		if err := dec.Decode(&data); err != nil {
@@ -48,7 +48,7 @@ func (s *Server) handleStoreTweets() http.HandlerFunc {
 			http.Error(w, "decode JSON payload", http.StatusBadRequest)
 			return
 		}
-		if err := s.TC.Store(data.Id, data.Username, data.TweetContent, data.Metadata); err != nil {
+		if err := s.TC.StoreTweets(data.Id, data.Username, data.TweetContent, data.Metadata); err != nil {
 			log.Printf("ERROR: server: store tweet %+v: %v\n", data, err)
 			http.Error(w, fmt.Sprintf("store tweet for username %s and id %s", data.Username, data.Id), http.StatusInternalServerError)
 			return
